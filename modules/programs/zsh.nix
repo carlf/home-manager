@@ -279,6 +279,17 @@ in
         type = types.bool;
       };
 
+      enableNixCompletion = mkOption {
+        default = true;
+        description = ''
+          Use the nix-zsh-completions package for completions of the nix commands.
+          For those using nixFlakes or nix from unstable, the nix-zsh-completions
+          package breaks. If you have this problem set this to false and you can
+          fallback to the completions that ship with nix >= 2.4.
+        '';
+        type = types.bool;
+      };
+
       completionInit = mkOption {
         default = "autoload -U compinit && compinit";
         description = "Initialization commands to run when completion is enabled.";
@@ -444,7 +455,7 @@ in
 
     {
       home.packages = with pkgs; [ zsh ]
-        ++ optional cfg.enableCompletion nix-zsh-completions
+        ++ optional (cfg.enableCompletion && cfg.enableNixCompletion) nix-zsh-completions;
         ++ optional cfg.oh-my-zsh.enable oh-my-zsh;
 
       home.file."${relToDotDir ".zshrc"}".text = ''
